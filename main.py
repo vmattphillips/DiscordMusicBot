@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands, tasks
 from discord.voice_client import VoiceClient
 import youtube_dl
+from config import Token
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 
@@ -129,4 +130,5 @@ async def stop(ctx):
 
     voice_channel.stop()
 
-client.run('token')
+#config file that contains the bot's token
+client.run(Token.botToken)
