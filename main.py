@@ -86,10 +86,27 @@ async def remove(ctx, number):
     except:
         await ctx.send('Your queue is either **empty** or the index is **out of range**')
         
-@client.command(name='play', help='This command plays songs')
-async def play(ctx):
+@client.command(name='play', help='This command adds a song to the queue and plays it, if its the first one')
+async def play(ctx, url):
     global queue
+    server = ctx.message.guild
+    voice_channel = server.voice_client
 
+    queue.append(url)
+
+    if not voice_channel.is_playing():
+        async with ctx.typing():
+            player = await YTDLSource.from_url(queue[0], loop=client.loop)
+            voice_channel.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+
+        await ctx.send('**Now playing:** {}'.format(player.title))
+        del(queue[0])
+    else:
+        await ctx.send(f'`{url}` added to queue!')
+
+@client.command(name='next', help='This command plays the next song in the queue')
+async def next(ctx):
+    global queue
     server = ctx.message.guild
     voice_channel = server.voice_client
 
